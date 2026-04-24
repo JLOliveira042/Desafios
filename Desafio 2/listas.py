@@ -1,70 +1,93 @@
-frutas = ["maçã", "banana", "laranja"]
-numeros = [1, 2, 3, 4, 5]
-misturado = [1, "texto", 3.14, True]
+tarefas = []
 
-print("Lista de frutas:", frutas)
-print("Lista de números:", numeros)
-print("Lista misturada:", misturado)
+def mostrar_tarefas():
+    print("\nLista de tarefas:")
+    if len(tarefas) == 0:
+        print("Nenhuma tarefa cadastrada.")
+    else:
+        for i, tarefa in enumerate(tarefas):
+            print(f"{i} - {tarefa}")
 
-print("\nAcessando elementos:")
-print("Primeira fruta:", frutas[0])
-print("Última fruta:", frutas[-1])
-print("Sublista de números:", numeros[1:4])
+def adicionar_tarefa():
+    tarefa = input("Digite uma nova tarefa: ")
+    tarefas.append(tarefa)
+    print("Tarefa adicionada.")
 
-print("\nIterando com for:")
-for fruta in frutas:
-    print("Fruta:", fruta)
+def remover_tarefa():
+    mostrar_tarefas()
+    try:
+        indice = int(input("Digite o índice da tarefa para remover: "))
+        removida = tarefas.pop(indice)
+        print(f"Tarefa removida: {removida}")
+    except:
+        print("Índice inválido.")
 
-print("\nIterando com while:")
-indice = 0
-while indice < len(frutas):
-    print(f"Fruta no índice {indice}: {frutas[indice]}")
-    indice += 1
+def modificar_tarefa():
+    mostrar_tarefas()
+    try:
+        indice = int(input("Digite o índice da tarefa para modificar: "))
+        nova = input("Digite a nova tarefa: ")
+        tarefas[indice] = nova
+        print("Tarefa atualizada.")
+    except:
+        print("Índice inválido.")
 
-print("\nOperações com listas:")
+def buscar_tarefa():
+    termo = input("Digite o nome da tarefa: ")
+    if termo in tarefas:
+        print("Tarefa encontrada.")
+    else:
+        print("Tarefa não encontrada.")
 
-frutas.append("morango")
-print("Após append:", frutas)
+def ordenar_tarefas():
+    tarefas.sort()
+    print("Lista ordenada.")
 
-frutas.remove("banana")
-print("Após remove:", frutas)
+def inverter_tarefas():
+    tarefas.reverse()
+    print("Lista invertida.")
 
-frutas[1] = "kiwi"
-print("Após modificação:", frutas)
+def usar_como_pilha():
+    print("\nUsando como pilha")
+    tarefas.append("Tarefa Pilha 1")
+    tarefas.append("Tarefa Pilha 2")
+    print("Pilha atual:", tarefas)
+    
+    removido = tarefas.pop()
+    print("Elemento removido:", removido)
 
-nova_lista = frutas + ["uva", "manga"]
-print("Após concatenação:", nova_lista)
+while True:
+    print("\n===== MENU =====")
+    print("1 - Adicionar tarefa")
+    print("2 - Remover tarefa")
+    print("3 - Modificar tarefa")
+    print("4 - Mostrar tarefas")
+    print("5 - Buscar tarefa")
+    print("6 - Ordenar lista")
+    print("7 - Inverter lista")
+    print("8 - Usar como pilha")
+    print("0 - Sair")
 
-print("\nExemplo de pilha:")
-pilha = []
+    opcao = input("Escolha uma opção: ")
 
-pilha.append(1)
-pilha.append(2)
-pilha.append(3)
-print("Pilha:", pilha)
-
-ultimo = pilha.pop()
-print("Elemento removido:", ultimo)
-print("Pilha após pop:", pilha)
-
-print("\nOutras operações:")
-numeros = [5, 2, 8, 1, 9]
-
-print("Tamanho:", len(numeros))
-print("Tem 8?", 8 in numeros)
-
-numeros.sort()
-print("Ordenado:", numeros)
-
-numeros.reverse()
-print("Invertido:", numeros)
-
-print("\nLista aninhada:")
-matriz = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-
-print("Matriz:", matriz)
-print("Elemento [1][2]:", matriz[1][2])
-
-print("\nList comprehension:")
-quadrados = [x**2 for x in range(1, 6)]
-print("Quadrados:", quadrados)
+    if opcao == "1":
+        adicionar_tarefa()
+    elif opcao == "2":
+        remover_tarefa()
+    elif opcao == "3":
+        modificar_tarefa()
+    elif opcao == "4":
+        mostrar_tarefas()
+    elif opcao == "5":
+        buscar_tarefa()
+    elif opcao == "6":
+        ordenar_tarefas()
+    elif opcao == "7":
+        inverter_tarefas()
+    elif opcao == "8":
+        usar_como_pilha()
+    elif opcao == "0":
+        print("Encerrando programa...")
+        break
+    else:
+        print("Opção inválida.")

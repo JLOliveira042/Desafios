@@ -1,74 +1,178 @@
-def exibir_menu():
-    print("\n--- SISTEMA DE LOJA SIMPLES ---")
-    print("1. Cadastrar Produto")
-    print("2. Realizar Venda")
-    print("3. Relatório de Vendas")
-    print("4. Sair")
-    return input("Escolha uma opção: ")
+produtos = []
+vendas = []
 
-def sistema_loja():
-    produtos = []  # Lista de dicionários para produtos
-    vendas = []    # Lista de dicionários para histórico de vendas
+def cadastrar_produto():
+    nome = input("Nome do produto: ").strip()
 
-    while True:
-        opcao = exibir_menu()
+    if nome == "":
+        print("Nome não pode ser vazio.")
+        return
 
-        if opcao == '1':
-            nome = input("Nome do produto: ").strip()
-            preco = float(input("Preço: R$ "))
-            estoque = int(input("Quantidade em estoque: "))
-            produtos.append({"nome": nome, "preco": preco, "estoque": estoque})
-            print(f"Produto '{nome}' cadastrado com sucesso!")
+    for p in produtos:
+        if p["nome"].lower() == nome.lower():
+            print("Produto já cadastrado.")
+            return
 
-        elif opcao == '2':
-            if not produtos:
-                print("Nenhum produto cadastrado.")
-                continue
-            
-            print("\nProdutos Disponíveis:")
-            for i, p in enumerate(produtos):
-                print(f"{i+1}. {p['nome']} - R$ {p['preco']:.2f} (Estoque: {p['estoque']})")
-            
-            idx = int(input("Selecione o número do produto: ")) - 1
-            qtd = int(input("Quantidade desejada: "))
-            
-            if qtd <= produtos[idx]['estoque']:
-                cliente = input("Nome do cliente: ")
-                valor_total = qtd * produtos[idx]['preco']
-                
-                # Regra de Desconto (5% se > 10 unidades)
-                if qtd > 10:
-                    valor_total *= 0.95
-                    print("Desconto de 5% aplicado!")
-                
-                # Atualiza estoque
-                produtos[idx]['estoque'] -= qtd
-                
-                # Registra venda
-                venda = {
-                    "cliente": cliente,
-                    "produto": produtos[idx]['nome'],
-                    "quantidade": qtd,
-                    "total": valor_total
-                }
-                vendas.append(venda)
-                print(f"Venda realizada! Total: R$ {valor_total:.2f}")
-            else:
-                print("Erro: Estoque insuficiente.")
+    try:
+        preco = float(input("Preço: "))
+        if preco <= 0:
+            print("Preço deve ser maior que zero.")
+            return
 
-        elif opcao == '3':
-            print("\n--- RELATÓRIO DE VENDAS ---")
-            total_loja = 0
+        estoque = int(input("Estoque inicial: "))
+        if estoque < 0:
+            print("Estoque não pode ser negativo.")
+            return
+
+    except:
+        print("Entrada inválida.")
+        return
+
+    produtos.append({
+        "nome": nome,
+        "preco": preco,
+        "estoque": estoque
+    })
+
+    print("Produto cadastrado com sucesso.")
+
+def listar_produtos():
+    if len(produtos) == 0:
+        print("Nenhum produto cadastrado.")
+        return False
+
+    print("\nLista de produtos:")
+    for i, p in enumerate(produtos):
+        print(f"{i} - {p['nome']} - R$ {p['preco']:.2f} - Estoque: {p['estoque']}")
+    
+    return True
+
+def calcular_venda(produto, quantidade):
+    valor_bruto = produto["preco"] * quantidade
+
+    desconto = 0
+    if quantidade > 10:
+        desconto = valor_bruto * 0.05
+
+    valor_final = valor_bruto - desconto
+
+    produto["estoque"] -= quantidade
+
+    return valor_bruto, desconto, valor_final
+
+def realizar_venda():
+    if not listar_produtos():
+        return
+
+    cliente = input("Nome do cliente: ").strip()
+    if cliente == "":
+        print("Nome inválido.")
+        return
+
+    try:
+        indice = int(input("Selecione o produto pelo índice: "))
+        produto = produtos[indice]
+    except:
+        print("Produto inválido.")
+        return
+
+    try:
+        quantidade = int(input("Quantidade: "))
+        if quantidade <= 0:
+            print("Quantidade inválida.")
+            return
+
+        if quantidade > produto["estoque"]:
+            print("Estoque insuficiente.")
+            return
+
+    except:
+        print("Entrada inválida.")
+        return
+
+    valor_bruto, desconto, valor_final = calcular_venda(produto, quantidade)
+
+    venda = {
+        "cliente": cliente,
+        "produto": produto["nome"],
+        "quantidade": quantidade,
+        "valor_bruto": valor_bruto,
+        "desconto": desconto,
+        "valor_final": valor_final
+    }
+
+    vendas.append(venda)
+
+    print("Venda realizada com sucesso.")
+
+def gerar_relatorio():
+    if len(vendas) == 0:
+        print("Nenhuma venda realizada.")
+        return
+
+    print("\n=== Relatório de Vendas ===")
+
+    total = 0
+
+    for v in vendas:
+        print(f"\nCliente: {v['cliente']}")
+        print(f"Produto: {v['produto']}")
+        print(f"Quantidade: {v['quantidade']}")
+        print(f"Valor Bruto: R$ {v['valor_bruto']:.2f}")
+        print(f"Desconto: R$ {v['desconto']:.2f}")
+        print(f"Valor Final: R$ {v['valor_final']:.2f}")
+
+        total += v["valor_final"]
+
+    print(f"\nTotal arrecadado pela loja: R$ {total:.2f}")
+
+def salvar_relatorio():
+    try:
+        with open("relatorio_vendas.txt", "w", encoding="utf-8") as arquivo:
+            arquivo.write("=== Relatório de Vendas ===\n")
+
+            total = 0
+
             for v in vendas:
-                print(f"Cliente: {v['cliente']} | {v['produto']} (x{v['quantidade']}) - R$ {v['total']:.2f}")
-                total_loja += v['total']
-            print(f"TOTAL ARRECADADO: R$ {total_loja:.2f}")
+                arquivo.write(f"\nCliente: {v['cliente']}\n")
+                arquivo.write(f"Produto: {v['produto']}\n")
+                arquivo.write(f"Quantidade: {v['quantidade']}\n")
+                arquivo.write(f"Valor Bruto: R$ {v['valor_bruto']:.2f}\n")
+                arquivo.write(f"Desconto: R$ {v['desconto']:.2f}\n")
+                arquivo.write(f"Valor Final: R$ {v['valor_final']:.2f}\n")
 
-        elif opcao == '4':
-            print("Encerrando sistema...")
+                total += v["valor_final"]
+
+            arquivo.write(f"\nTotal arrecadado: R$ {total:.2f}\n")
+
+        print("Relatório salvo com sucesso.")
+
+    except:
+        print("Erro ao salvar o arquivo.")
+
+def main():
+    while True:
+        print("\n===== MENU =====")
+        print("1 - Cadastrar produto")
+        print("2 - Realizar venda")
+        print("3 - Gerar relatório")
+        print("4 - Salvar relatório")
+        print("5 - Sair")
+
+        opcao = input("Escolha: ")
+
+        if opcao == "1":
+            cadastrar_produto()
+        elif opcao == "2":
+            realizar_venda()
+        elif opcao == "3":
+            gerar_relatorio()
+        elif opcao == "4":
+            salvar_relatorio()
+        elif opcao == "5":
+            print("Encerrando...")
             break
         else:
-            print("Opção inválida!")
+            print("Opção inválida.")
 
-if __name__ == "__main__":
-    sistema_loja()
+main()
