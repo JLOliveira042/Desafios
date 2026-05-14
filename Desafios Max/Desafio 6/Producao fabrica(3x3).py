@@ -1,25 +1,49 @@
 import numpy as np
 
-A = np.array([
-    [5, 3],
-    [8, 2]
-])
+A = []
+B = []
 
-B = np.array([110, 100])
+print("Digite os coeficientes da matriz A (3x3):")
 
-X = np.linalg.solve(A, B)
+for i in range(3):
+    linha = []
 
-x = X[0]
-y = X[1]
+    for j in range(3):
+        valor = float(input(f"A[{i}][{j}]: "))
+        linha.append(valor)
 
-print("Taxas de produção:")
-print(f"x = {x:.2f} itens por trabalhador")
-print(f"y = {y:.2f} itens por máquina")
+    A.append(linha)
 
-producao = 10*x + 4*y
+print("\nDigite os termos independentes:")
 
-print(f"\nProdução com 10 trabalhadores e 4 máquinas: {producao:.2f}")
+for i in range(3):
+    valor = float(input(f"B[{i}]: "))
+    B.append(valor)
 
-print("\nVerificação:")
-print(f"5x + 3y = {5*x + 3*y:.2f}")
-print(f"8x + 2y = {8*x + 2*y:.2f}")
+A = np.array(A)
+B = np.array(B)
+
+print("\nMatriz A:")
+print(A)
+
+print("\nVetor B:")
+print(B)
+
+try:
+    det = np.linalg.det(A)
+
+    print(f"\nDeterminante: {det:.2f}")
+
+    if abs(det) < 1e-10:
+        print("Erro: matriz não invertível.")
+
+    else:
+        X = np.linalg.solve(A, B)
+
+        print("\nSolução:")
+        print(f"x = {X[0]:.2f}")
+        print(f"y = {X[1]:.2f}")
+        print(f"z = {X[2]:.2f}")
+
+except np.linalg.LinAlgError:
+    print("Erro ao resolver o sistema.")
