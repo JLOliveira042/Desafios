@@ -14,7 +14,6 @@ for i in range(3):
 
     A.append(linha)
 
-# Entrada do vetor B
 print("\nDigite os termos independentes:")
 
 for i in range(3):
